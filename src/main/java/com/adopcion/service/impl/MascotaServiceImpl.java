@@ -96,6 +96,16 @@ public class MascotaServiceImpl implements MascotaService {
     }
 
     private MascotaListDTO toListDTO(Mascota m) {
+        // Buscar imagen principal
+        String urlFoto = null;
+        if (m.getImagenes() != null && !m.getImagenes().isEmpty()) {
+            urlFoto = m.getImagenes().stream()
+                    .filter(img -> Boolean.TRUE.equals(img.getImagenPrincipal()))
+                    .findFirst()
+                    .map(img -> img.getUrlImagen())
+                    .orElse(m.getImagenes().get(0).getUrlImagen());
+        }
+
         return MascotaListDTO.builder()
                 .idMascota(m.getIdMascota())
                 .nombre(m.getNombre())
@@ -103,6 +113,7 @@ public class MascotaServiceImpl implements MascotaService {
                 .sexo(m.getSexo() != null ? m.getSexo().name() : null)
                 .estadoAdopcion(m.getEstadoAdopcion())
                 .tipoMascota(m.getTipoMascota().getDescripcion())
+                .urlFotoPrincipal(urlFoto)   // ← nuevo
                 .build();
     }
 }

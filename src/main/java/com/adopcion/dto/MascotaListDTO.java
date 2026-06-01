@@ -13,4 +13,5 @@ public class MascotaListDTO {
     private String sexo;
     private String estadoAdopcion;
     private String tipoMascota;       // descripción del tipo, para la imagen en Android
+    private String urlFotoPrincipal;
 }

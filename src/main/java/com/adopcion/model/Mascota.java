@@ -1,8 +1,10 @@
 package com.adopcion.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "Mascota")
@@ -50,6 +52,11 @@ public class Mascota {
     @Column(nullable = false)
     private LocalDateTime fechaPublicacion;
 
+    // ← AGREGAR ESTO
+    @JsonIgnore
+    @OneToMany(mappedBy = "mascota", fetch = FetchType.LAZY)
+    private List<ImagenMascota> imagenes;
+
     @PrePersist
     protected void onCreate() {
         if (fechaPublicacion == null) fechaPublicacion = LocalDateTime.now();
@@ -58,8 +65,7 @@ public class Mascota {
 
     public enum Sexo { Macho, Hembra }
 
-    // Constantes para evitar strings mágicos
-    public static final String ESTADO_DISPONIBLE  = "Disponible";
-    public static final String ESTADO_EN_PROCESO  = "En proceso";
-    public static final String ESTADO_ADOPTADO    = "Adoptado";
+    public static final String ESTADO_DISPONIBLE = "Disponible";
+    public static final String ESTADO_EN_PROCESO = "En proceso";
+    public static final String ESTADO_ADOPTADO   = "Adoptado";
 }
