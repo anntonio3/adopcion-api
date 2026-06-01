@@ -18,7 +18,7 @@ public class MascotaMapper {
                 .sexo(m.getSexo() != null ? m.getSexo().name() : null)
                 .edadAproximada(m.getEdadAproximada())
                 .descripcion(m.getDescripcion())
-                .estadoAdopcion(m.getEstadoAdopcion() != null ? m.getEstadoAdopcion().name() : null)
+                .estadoAdopcion(m.getEstadoAdopcion())   // ya es String
                 .activo(m.getActivo())
                 .fechaPublicacion(m.getFechaPublicacion())
                 .build();

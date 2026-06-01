@@ -3,7 +3,6 @@ package com.adopcion.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "Mascota")
@@ -33,7 +32,7 @@ public class Mascota {
     private String raza;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "ENUM('Macho','Hembra')")
     private Sexo sexo;
 
     @Column(length = 50)
@@ -42,9 +41,8 @@ public class Mascota {
     @Column(columnDefinition = "TEXT")
     private String descripcion;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private EstadoAdopcion estadoAdopcion = EstadoAdopcion.Disponible;
+    @Column(nullable = false, columnDefinition = "ENUM('Disponible','En proceso','Adoptado')")
+    private String estadoAdopcion = "Disponible";
 
     @Column(nullable = false)
     private Boolean activo = true;
@@ -52,14 +50,16 @@ public class Mascota {
     @Column(nullable = false)
     private LocalDateTime fechaPublicacion;
 
-    @OneToMany(mappedBy = "mascota", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<ImagenMascota> imagenes;
-
     @PrePersist
     protected void onCreate() {
         if (fechaPublicacion == null) fechaPublicacion = LocalDateTime.now();
+        if (estadoAdopcion == null) estadoAdopcion = "Disponible";
     }
 
     public enum Sexo { Macho, Hembra }
-    public enum EstadoAdopcion { Disponible, En_proceso, Adoptado }
+
+    // Constantes para evitar strings mágicos
+    public static final String ESTADO_DISPONIBLE  = "Disponible";
+    public static final String ESTADO_EN_PROCESO  = "En proceso";
+    public static final String ESTADO_ADOPTADO    = "Adoptado";
 }

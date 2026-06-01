@@ -56,8 +56,7 @@ public class AdopcionServiceImpl implements AdopcionService {
                         .orElseThrow(() -> new ResourceNotFoundException("Usuario", idAdoptante))
         );
 
-        // Actualizar estado de la mascota a Adoptado
-        mascota.setEstadoAdopcion(Mascota.EstadoAdopcion.Adoptado);
+        mascota.setEstadoAdopcion(Mascota.ESTADO_ADOPTADO);   // era: Mascota.EstadoAdopcion.Adoptado
         mascotaRepository.save(mascota);
 
         // Marcar solicitud como Aprobada

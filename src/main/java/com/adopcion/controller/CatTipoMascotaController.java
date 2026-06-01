@@ -1,5 +1,6 @@
 package com.adopcion.controller;
 
+import com.adopcion.dto.TipoMascotaResumenDTO;
 import com.adopcion.model.CatTipoMascota;
 import com.adopcion.service.CatTipoMascotaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,12 @@ public class CatTipoMascotaController {
 
     @Autowired
     private CatTipoMascotaService catTipoMascotaService;
+
+    /** Vista principal Android: 4 cards con foto y disponibles */
+    @GetMapping("/resumen")
+    public ResponseEntity<List<TipoMascotaResumenDTO>> getResumen() {
+        return ResponseEntity.ok(catTipoMascotaService.findAllConDisponibles());
+    }
 
     @GetMapping
     public ResponseEntity<List<CatTipoMascota>> getAll() {

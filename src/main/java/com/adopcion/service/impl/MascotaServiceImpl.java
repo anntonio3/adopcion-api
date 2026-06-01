@@ -1,5 +1,8 @@
+// src/main/java/com/adopcion/service/impl/MascotaServiceImpl.java
 package com.adopcion.service.impl;
 
+import com.adopcion.dto.MascotaListDTO;
+import com.adopcion.dto.MascotaRequestDTO;
 import com.adopcion.exception.ResourceNotFoundException;
 import com.adopcion.model.Mascota;
 import com.adopcion.repository.*;
@@ -8,19 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class MascotaServiceImpl implements MascotaService {
 
-    @Autowired
-    private MascotaRepository mascotaRepository;
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
-    @Autowired
-    private CatTipoMascotaRepository catTipoMascotaRepository;
+    @Autowired private MascotaRepository      mascotaRepository;
+    @Autowired private UsuarioRepository      usuarioRepository;
+    @Autowired private CatTipoMascotaRepository catTipoMascotaRepository;
 
     @Override
     public List<Mascota> findAll() {
@@ -29,7 +28,15 @@ public class MascotaServiceImpl implements MascotaService {
 
     @Override
     public List<Mascota> findDisponibles() {
-        return mascotaRepository.findByEstadoAdopcion(Mascota.EstadoAdopcion.Disponible);
+        return mascotaRepository.findByEstadoAdopcion(Mascota.ESTADO_DISPONIBLE);
+    }
+
+    @Override
+    public List<MascotaListDTO> findByTipo(Integer idTipo) {
+        return mascotaRepository.findByTipoMascota_IdTipoMascotaAndActivoTrue(idTipo)
+                .stream()
+                .map(this::toListDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -49,6 +56,18 @@ public class MascotaServiceImpl implements MascotaService {
                         .orElseThrow(() -> new ResourceNotFoundException("CatTipoMascota", idTipo))
         );
         return mascotaRepository.save(mascota);
+    }
+
+    @Override
+    public Mascota createFromDTO(Integer idDonador, MascotaRequestDTO dto) {
+        Mascota mascota = Mascota.builder()
+                .nombre(dto.getNombre())
+                .raza(dto.getRaza())
+                .sexo(Mascota.Sexo.valueOf(dto.getSexo()))
+                .estadoAdopcion(Mascota.ESTADO_DISPONIBLE)
+                .activo(true)
+                .build();
+        return create(idDonador, dto.getIdTipoMascota(), mascota);
     }
 
     @Override
@@ -74,5 +93,16 @@ public class MascotaServiceImpl implements MascotaService {
         Mascota mascota = findById(id);
         mascota.setActivo(false);
         mascotaRepository.save(mascota);
+    }
+
+    private MascotaListDTO toListDTO(Mascota m) {
+        return MascotaListDTO.builder()
+                .idMascota(m.getIdMascota())
+                .nombre(m.getNombre())
+                .raza(m.getRaza())
+                .sexo(m.getSexo() != null ? m.getSexo().name() : null)
+                .estadoAdopcion(m.getEstadoAdopcion())
+                .tipoMascota(m.getTipoMascota().getDescripcion())
+                .build();
     }
 }
